@@ -118,7 +118,7 @@ const LOADING_LINES = [
                         (click)="listen(r, h)" [attr.aria-label]="'Écouter à ' + (h.start | timecode)">
                         ▶ {{ h.start | timecode }}
                       </button>
-                      <a class="snippet quote" [routerLink]="['/episodes', r.episode.slug]"
+                      <a class="snippet" [routerLink]="['/episodes', r.episode.slug]"
                         [queryParams]="{ t: floor(h.start), q: data.query }">
                         …@for (p of h.parts; track $index) {@if (p.hit) {<mark>{{ p.t }}</mark>} @else {{{ p.t }}}}…
                       </a>
@@ -168,7 +168,8 @@ const LOADING_LINES = [
     .guests { margin: 4px 0 10px; color: var(--ink-soft); font-size: 0.9rem; }
     .hit { display: flex; align-items: flex-start; gap: 12px; margin: 10px 0; }
     .hit .dymo { flex: none; border: 0; margin-top: 3px; }
-    .snippet { font-size: 1.12rem; line-height: 1.4; text-decoration: none; }
+    /* Texte courant lisible (l'italique serif reste pour les titres et petites phrases). */
+    .snippet { font-family: var(--font-ui); font-size: 1rem; line-height: 1.55; text-decoration: none; }
     .snippet:hover { color: var(--can); }
     .meta-only { color: var(--ink-soft); font-size: 0.92rem; }
     .egg { display: inline-block; margin: 0 0 18px; font-size: 1.3rem; rotate: -1.4deg; }
