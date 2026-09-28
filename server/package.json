@@ -1,0 +1,26 @@
+{
+  "name": "floodcast-fan-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API + indexation du Floodcast (épisodes, invités, transcriptions, recherche).",
+  "scripts": {
+    "start": "node --env-file-if-exists=../.env --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --env-file-if-exists=../.env --disable-warning=ExperimentalWarning --watch src/server.js",
+    "ingest": "node --disable-warning=ExperimentalWarning scripts/ingest-rss.js",
+    "index": "node --disable-warning=ExperimentalWarning scripts/index-transcripts.js",
+    "embed": "node --disable-warning=ExperimentalWarning scripts/embed.js",
+    "guests:report": "node --disable-warning=ExperimentalWarning scripts/guests-report.js",
+    "offsite": "node --disable-warning=ExperimentalWarning scripts/collect-offsite.js",
+    "admin:password": "node --disable-warning=ExperimentalWarning scripts/admin-password.js",
+    "export": "node --disable-warning=ExperimentalWarning scripts/export-static.js"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^4.3.0",
+    "express": "^5.1.0",
+    "fast-xml-parser": "^5.2.0"
+  }
+}

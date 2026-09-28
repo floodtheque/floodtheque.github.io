@@ -1,0 +1,24 @@
+{
+  "name": "floodtheque",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Floodthèque — l'archive des fans du Floodcast : épisodes, invités, transcriptions et recherche par phrase.",
+  "scripts": {
+    "setup": "npm --prefix server install && npm --prefix web install",
+    "setup:whisper": "python -m venv .venv-whisper && .venv-whisper\\Scripts\\pip install -r transcriber/requirements.txt",
+    "ingest": "npm --prefix server run ingest",
+    "transcribe": ".venv-whisper\\Scripts\\python -u transcriber/transcribe.py",
+    "index": "npm --prefix server run index",
+    "embed": "npm --prefix server run embed",
+    "update": "npm run ingest && npm run transcribe && npm run index && npm run embed",
+    "guests:report": "npm --prefix server run guests:report",
+    "dev:api": "npm --prefix server run dev",
+    "dev:web": "npm --prefix web start",
+    "build": "npm --prefix web run build",
+    "start": "npm --prefix server start",
+    "offsite": "npm --prefix server run offsite",
+    "admin:password": "npm --prefix server run admin:password",
+    "export": "npm --prefix server run export",
+    "build:pages": "npm run export && npm --prefix web run build:pages"
+  }
+}

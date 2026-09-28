@@ -1,0 +1,68 @@
+{
+  "_comment": "Données vérifiées à la main. Chaque lien vient de la page officielle de la personne (source indiquée). Ne rien ajouter de deviné : si un rôle n'est pas confirmé, laisser role à null.",
+  "people": [
+    {
+      "slug": "florent-bernard",
+      "name": "Florent Bernard",
+      "nickname": "FloBer",
+      "tagline": "Réalisateur, scénariste, co-animateur du Floodcast",
+      "website": "https://florentbernard.fr",
+      "sources": ["https://florentbernard.fr", "https://fr.wikipedia.org/wiki/Florent_Bernard"],
+      "socials": [
+        { "label": "Instagram", "handle": "@fl0rentbernard", "url": "https://www.instagram.com/fl0rentbernard/" },
+        { "label": "Letterboxd", "handle": "FlorentBernard", "url": "https://letterboxd.com/FlorentBernard/" },
+        { "label": "IMDb", "handle": null, "url": "https://www.imdb.com/name/nm5774643/" },
+        { "label": "Site officiel", "handle": "florentbernard.fr", "url": "https://florentbernard.fr" }
+      ],
+      "projects": [
+        { "title": "Un peu de sérieux", "type": "Livre", "year": 2026, "role": null, "status": "annoncé", "note": "Hugo Images" },
+        { "title": "Starlette", "type": "Film", "year": null, "role": null, "status": "en préparation" },
+        { "title": "Evil Dead Burn", "type": "Film", "year": 2026, "role": null },
+        { "title": "Nous, les Leroy", "type": "Film", "year": 2024, "role": "Réalisateur et scénariste", "note": "Premier long-métrage. Grand Prix du Jury au festival de l'Alpe d'Huez" },
+        { "title": "Vermines", "type": "Film", "year": 2023, "role": "Scénariste", "note": "Réalisé par Sébastien Vaniček" },
+        { "title": "Roast de McFly et Carlito", "type": "Programme", "year": 2023, "role": null },
+        { "title": "Jack Mimoun et les Secrets de Val Verde", "type": "Film", "year": 2022, "role": null },
+        { "title": "Le Flambeau : Les Aventuriers de Chupacabra", "type": "Série", "year": 2022, "role": null },
+        { "title": "La Flamme", "type": "Série", "year": 2020, "role": null },
+        { "title": "Ollie et l'Alien", "type": "BD", "year": 2020, "role": "Scénariste", "note": "Dessin de David Combet" },
+        { "title": "Bloqués", "type": "Série", "year": 2015, "role": null },
+        { "title": "Golden Moustache", "type": "Web", "year": 2012, "role": null, "note": "2012–2016" },
+        { "title": "FloodCast", "type": "Podcast", "year": 2015, "role": "Co-animateur", "note": "2015–2025, 10 saisons" }
+      ]
+    },
+    {
+      "slug": "adrien-menielle",
+      "name": "Adrien Ménielle",
+      "nickname": null,
+      "tagline": "Auteur, acteur, dessinateur, streamer, co-animateur du Floodcast",
+      "website": "https://adrien.cool",
+      "sources": ["https://adrien.cool", "https://fr.wikipedia.org/wiki/Adrien_M%C3%A9nielle"],
+      "socials": [
+        { "label": "Instagram", "handle": "@adrienmenielle", "url": "https://instagram.com/adrienmenielle" },
+        { "label": "Instagram (dessin)", "handle": "@menielle.png", "url": "https://www.instagram.com/menielle.png" },
+        { "label": "Twitch", "handle": "adrienmenielle", "url": "https://twitch.tv/adrienmenielle" },
+        { "label": "YouTube (sketchs)", "handle": "AdrienMenielle", "url": "https://www.youtube.com/user/AdrienMenielle/playlists" },
+        { "label": "SoundCloud (musique)", "handle": "adrienmenielle", "url": "https://soundcloud.com/adrienmenielle" },
+        { "label": "IMDb", "handle": null, "url": "https://www.imdb.com/name/nm7130628/" },
+        { "label": "Tous ses liens", "handle": "adrien.cool", "url": "https://adrien.cool" }
+      ],
+      "projects": [
+        { "title": "Nous, les Leroy", "type": "Film", "year": 2024, "role": null },
+        { "title": "Visitors", "type": "Série", "year": 2022, "role": null },
+        { "title": "Derby Girl", "type": "Série", "year": 2020, "role": null, "note": "2020–2022" },
+        { "title": "La Bonne Auberge", "type": "Web", "year": 2020, "role": null, "note": "Actual play" },
+        { "title": "Groom", "type": "Série", "year": 2018, "role": null, "note": "2018–2020" },
+        { "title": "Irresponsable", "type": "Série", "year": 2018, "role": null },
+        { "title": "La Folle Histoire de Max et Léon", "type": "Film", "year": 2016, "role": null },
+        { "title": "Hero Corp", "type": "Série", "year": 2016, "role": null },
+        { "title": "FloodCast", "type": "Podcast", "year": 2015, "role": "Co-animateur", "note": "2015–2025, 10 saisons" },
+        { "title": "Les Dissociés", "type": "Film", "year": 2015, "role": null },
+        { "title": "Lou ! Journal infime", "type": "Film", "year": 2014, "role": null },
+        { "title": "Anatole", "type": "BD", "year": 2013, "role": null, "note": "Série jeunesse" },
+        { "title": "Bref.", "type": "Série", "year": 2012, "role": null },
+        { "title": "Le Golden Show", "type": "Web", "year": 2012, "role": null },
+        { "title": "Les Autres Gens", "type": "BD", "year": 2011, "role": null }
+      ]
+    }
+  ]
+}

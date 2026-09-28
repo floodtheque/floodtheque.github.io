@@ -1,0 +1,12 @@
+node_modules/
+web/dist/
+web/.angular/
+.venv-whisper/
+data/floodcast.db*
+data/*.log
+data/transcripts/*.part
+
+.env
+.env.*
+
+.claude/

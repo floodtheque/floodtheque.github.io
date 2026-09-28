@@ -1,0 +1,62 @@
+# Publie la version statique de la Floodthèque sur GitHub Pages.
+# Les données (web/site-data/) sont produites en local par `npm run export` puis commitées :
+# la transcription (GPU) et l'index ne tournent pas sur GitHub.
+name: GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - name: Build (base href = nom du dépôt, ou / pour <user>.github.io)
+        run: |
+          REPO="${{ github.event.repository.name }}"
+          if [[ "$REPO" == *.github.io ]]; then BASE="/"; else BASE="/$REPO/"; fi
+          npx ng build --configuration pages --base-href "$BASE"
+
+      - name: Routes Angular + pas de Jekyll
+        run: |
+          # GitHub Pages sert 404.html pour les chemins inconnus (/episodes/xxx) : l'app prend le relais.
+          cp dist/pages/browser/index.html dist/pages/browser/404.html
+          touch dist/pages/browser/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist/pages/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
