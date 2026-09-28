@@ -48,6 +48,8 @@
 - [x] Dépendances : 0 vulnérabilité (transformers.js 4)
 - [x] Mot de passe admin défini (`npm run admin:password`)
 
+- [x] Hallucinations Whisper (« Sous-titrage Société Radio-Canada »…) : `--repair` (589 passages retranscrits, 94 retirés), réparation auto sur les nouvelles transcriptions, filtre à l'indexation
+
 ## Fun
 - [x] Épisode au hasard « Au pif » : défilement de tirages, flash, photo qui se développe (menu + accueil)
 - [x] Plus de barres de défilement pendant l'animation

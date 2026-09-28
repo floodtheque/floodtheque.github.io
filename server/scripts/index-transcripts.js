@@ -7,6 +7,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { TRANSCRIPTS_DIR } from '../src/config.js';
+
+const HALLUCINATION = /sous-titr|sous titres? (par|réalis)|amara\.org/i;
 import { getDb, transaction } from '../src/db.js';
 import { detectAds } from '../src/ads.js';
 import { buildChunks, textHash } from '../src/indexing.js';
@@ -31,7 +33,10 @@ for (const file of fs.readdirSync(TRANSCRIPTS_DIR).filter((f) => f.endsWith('.js
     console.warn(`  ? ${file} ne correspond à aucun épisode connu, ignoré`);
     continue;
   }
-  corpus.set(id, { title: titles.get(id), segments: data.segments ?? [] });
+  // Filet de sécurité : les hallucinations de Whisper (« Sous-titrage Société Radio-Canada »…) ne sont
+  // jamais indexées ni affichées. `npm run transcribe -- --repair` retranscrit ces passages.
+  const segments = (data.segments ?? []).filter((s) => !HALLUCINATION.test(s.text));
+  corpus.set(id, { title: titles.get(id), segments });
   meta.set(id, { code: data.code ?? id, model: data.model ?? null, audioBytes: data.audio_bytes ?? null });
 }
 

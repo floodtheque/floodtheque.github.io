@@ -11,6 +11,7 @@ Usage :
     python transcriber/transcribe.py --only S10E42 S01E01 # épisodes précis
     python transcriber/transcribe.py --model large-v3 --oldest-first
     python transcriber/transcribe.py --resync             # retranscrit les épisodes désynchronisés
+    python transcriber/transcribe.py --repair             # retranscrit seulement les passages hallucinés
 
 Synchronisation sans stocker l'audio : Acast assemble les pubs par "auditeur" (IP + User-Agent)
 et ressert le même assemblage aux requêtes suivantes. On télécharge avec un User-Agent fixe
@@ -102,6 +103,55 @@ def file_stem(episode_id: str) -> str:
     des caractères interdits sous Windows. L'identifiant exact reste dans le JSON (episode_id)."""
     return re.sub(r"[^A-Za-z0-9._-]", "_", episode_id)
 
+# Hallucinations connues de Whisper : sur des rires, de la musique ou des voix qui se chevauchent,
+# le modèle "complète" avec des mentions de sous-titreurs vues à l'entraînement.
+HALLUCINATION = re.compile(r"sous-titr|sous titres? (par|réalis)|amara\.org", re.I)
+
+
+def is_hallucination(text: str) -> bool:
+    return bool(HALLUCINATION.search(text))
+
+
+def repair_segments(model, audio, segments: list[dict], ep: dict) -> tuple[list[dict], int, int]:
+    """Retranscrit uniquement les segments hallucinés, sur l'audio déjà décodé (16 kHz mono).
+
+    Réglages prudents : pas de lots, pas de contexte précédent, repli en température.
+    Renvoie (segments, réparés, supprimés) : un passage toujours halluciné est simplement retiré.
+    """
+    sr = 16000
+    out, fixed, dropped = [], 0, 0
+    for seg in segments:
+        if not is_hallucination(seg["text"]):
+            out.append(seg)
+            continue
+        start = max(0.0, seg["start"] - 1.0)
+        end = min(len(audio) / sr, seg["end"] + 1.0)
+        clip = audio[int(start * sr): int(end * sr)]
+        new, _ = model.transcribe(
+            clip,
+            language="fr",
+            beam_size=5,
+            vad_filter=False,
+            condition_on_previous_text=False,
+            initial_prompt=build_prompt(ep),
+        )
+        found = []
+        for s in new:
+            text = s.text.strip()
+            if text and not is_hallucination(text):
+                found.append({
+                    "start": round(max(seg["start"], start + s.start), 2),
+                    "end": round(min(seg["end"], start + s.end), 2),
+                    "text": text,
+                })
+        if found:
+            out.extend(found)
+            fixed += 1
+        else:
+            dropped += 1
+    return out, fixed, dropped
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--model", default="large-v3-turbo",
@@ -116,6 +166,8 @@ def main() -> None:
     p.add_argument("--force", action="store_true", help="retranscrire même si déjà fait")
     p.add_argument("--resync", action="store_true",
                    help="retranscrire les épisodes dont l'assemblage de pubs Acast a changé depuis")
+    p.add_argument("--repair", action="store_true",
+                   help="retranscrire seulement les passages hallucinés (« Sous-titrage … ») des épisodes déjà faits")
     args = p.parse_args()
 
     if not DB_PATH.exists():
@@ -140,6 +192,9 @@ def main() -> None:
 
     def needs_work(e: dict) -> bool:
         path = OUT_DIR / f"{file_stem(e['id'])}.json"
+        if args.repair:
+            return path.exists() and any(
+                is_hallucination(x["text"]) for x in json.loads(path.read_text(encoding="utf-8"))["segments"])
         if args.force or not path.exists():
             return True
         if args.resync:
@@ -162,6 +217,24 @@ def main() -> None:
                 download(ep["audio_url"], mp3)
             except Exception as exc:  # réseau capricieux : on passe au suivant
                 print(f"   ✗ téléchargement impossible : {exc}", flush=True)
+                continue
+
+            from faster_whisper.audio import decode_audio
+            path = OUT_DIR / f"{file_stem(ep['id'])}.json"
+
+            if args.repair:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                if payload.get("audio_bytes") not in (None, mp3.stat().st_size):
+                    # Acast sert un autre assemblage de pubs : les timecodes ne correspondraient plus.
+                    print("   ✗ assemblage de pubs différent : utiliser --resync pour cet épisode", flush=True)
+                    continue
+                audio = decode_audio(str(mp3), sampling_rate=16000)
+                payload["segments"], fixed, dropped = repair_segments(model, audio, payload["segments"], ep)
+                payload["repaired_at"] = time.strftime("%Y-%m-%dT%H:%M:%S")
+                tmp_json = OUT_DIR / f"{file_stem(ep['id'])}.json.part"
+                tmp_json.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+                tmp_json.replace(path)
+                print(f"   ✓ {fixed} passage(s) réparé(s), {dropped} retiré(s) en {time.time() - t0:.0f}s", flush=True)
                 continue
 
             if batched:
@@ -189,6 +262,9 @@ def main() -> None:
                 if text:
                     out.append({"start": round(s.start, 2), "end": round(s.end, 2), "text": text})
             audio_bytes = mp3.stat().st_size  # empreinte de l'assemblage de pubs transcrit
+            if any(is_hallucination(x["text"]) for x in out):
+                out, fixed, dropped = repair_segments(model, decode_audio(str(mp3), sampling_rate=16000), out, ep)
+                print(f"   ↺ {fixed} passage(s) halluciné(s) retranscrit(s), {dropped} retiré(s)", flush=True)
 
         payload = {
             "episode_id": ep["id"],
